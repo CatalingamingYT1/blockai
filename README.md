@@ -1,2 +1,1 @@
-# casinos-play
-Casino with adds :)
+Free AI
