@@ -1,60 +1,116 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Bomb Game</title>
+    <title>Bombastic Casino</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap');
+        
+        :root {
+            --primary: #e63946;
+            --secondary: #457b9d;
+            --accent: #f4a261;
+            --dark: #1d3557;
+            --light: #f1faee;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
             height: 100vh;
             margin: 0;
+            display: flex;
+            color: var(--light);
+            overflow: hidden;
+        }
+        
+        .casino-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            animation: logoGlow 3s infinite alternate;
+        }
+        
+        .casino-logo img {
+            height: 50px;
+            margin-right: 15px;
+        }
+        
+        .casino-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin: 0;
+            background: linear-gradient(to right, #f4a261, #e9c46a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(233, 196, 106, 0.3);
+        }
+        
+        .container {
+            width: 80%;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
-            overflow: hidden;
-        }
-        
-        .container {
-            text-align: center;
             position: relative;
             z-index: 1;
         }
         
-        h1 {
-            font-size: 3rem;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            margin-bottom: 20px;
-            animation: glow 2s infinite alternate;
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #f4a261, #e9c46a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(233, 196, 106, 0.3);
+            animation: textFloat 4s ease-in-out infinite;
+        }
+        
+        .game-header p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.8;
         }
         
         .game-board {
             display: grid;
-            grid-template-columns: repeat(5, 80px);
+            grid-template-columns: repeat(5, 90px);
             grid-gap: 15px;
-            margin: 30px auto;
+            margin: 20px auto;
             perspective: 1000px;
+            position: relative;
         }
         
         .square {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 30px;
             cursor: pointer;
             transition: all 0.3s ease;
             transform-style: preserve-3d;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
         }
         
         .square::before {
@@ -66,94 +122,266 @@
             height: 200%;
             background: linear-gradient(
                 to bottom right,
-                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 0.15),
                 rgba(255, 255, 255, 0)
             );
             transform: rotate(45deg);
-            animation: shine 3s infinite;
+            animation: shine 4s infinite;
+            opacity: 0.5;
         }
         
         .square:hover {
             transform: translateY(-5px) rotateX(10deg);
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
-            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.15);
         }
         
         .square.win {
-            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            background: linear-gradient(135deg, rgba(72, 199, 116, 0.8), rgba(42, 157, 143, 0.8));
             transform: rotateY(180deg);
+            box-shadow: 0 0 30px rgba(72, 199, 116, 0.6);
         }
         
         .square.bomb {
-            background: linear-gradient(135deg, #f44336, #E91E63);
-            transform: rotateY(180deg) scale(1.1);
-            animation: explode 0.5s forwards;
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.8), rgba(233, 30, 99, 0.8));
+            transform: rotateY(180deg);
+            box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
+            animation: explode 0.8s forwards;
         }
         
-        .controls {
-            margin-top: 30px;
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            margin: 30px auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-box {
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .info-box p {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .bet-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .bet-amount {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .bet-amount button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+        
+        .bet-amount button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .bet-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
         }
         
         button {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--accent), #e9c46a);
+            border: none;
+            color: var(--dark);
+            padding: 15px 30px;
             font-size: 1rem;
+            font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
             outline: none;
-            margin: 0 10px;
+            box-shadow: 0 5px 15px rgba(244, 162, 97, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
         }
         
         button:hover {
-            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(244, 162, 97, 0.6);
         }
         
-        .score {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        button:disabled:hover {
+            transform: none;
+        }
+        
+        .double-btn {
+            background: linear-gradient(135deg, #457b9d, #1d3557);
+            color: white;
+            box-shadow: 0 5px 15px rgba(29, 53, 87, 0.4);
+        }
+        
+        .double-btn:hover {
+            box-shadow: 0 8px 20px rgba(29, 53, 87, 0.6);
         }
         
         .confetti {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent);
             border-radius: 50%;
             animation: fall 5s linear forwards;
+            z-index: 10;
         }
         
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        .chip {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, var(--accent) 30%, #e9c46a 100%);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            animation: chipFall 3s ease-in forwards;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .bomb-animation {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff0 0%, #f80 50%, #f00 100%);
+            border-radius: 50%;
+            animation: bombExplode 0.8s ease-out forwards;
+            z-index: 20;
+            pointer-events: none;
+            transform: scale(0);
+            opacity: 0.8;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes logoGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(244, 162, 97, 0.5));
             }
-            to {
-                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
+            100% {
+                filter: drop-shadow(0 0 15px rgba(244, 162, 97, 0.9));
+            }
+        }
+        
+        @keyframes textFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
             }
         }
         
         @keyframes shine {
             0% {
-                transform: rotate(45deg) translate(-10%, -10%);
+                transform: rotate(45deg) translate(-30%, -30%);
             }
             100% {
-                transform: rotate(45deg) translate(10%, 10%);
+                transform: rotate(45deg) translate(30%, 30%);
             }
         }
         
         @keyframes explode {
             0% {
-                transform: scale(1);
+                transform: rotateY(180deg) scale(1);
+                box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
             }
             50% {
-                transform: scale(1.3);
+                transform: rotateY(180deg) scale(1.3);
+                box-shadow: 0 0 60px rgba(230, 57, 70, 0.9);
             }
             100% {
-                transform: scale(1);
+                transform: rotateY(180deg) scale(1);
+                box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
             }
         }
         
@@ -164,55 +392,167 @@
             }
         }
         
-        .pulse {
-            animation: pulse 1s infinite;
+        @keyframes chipFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh + 100px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes bombExplode {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
         }
         
         @keyframes pulse {
             0% {
                 transform: scale(1);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             }
             50% {
                 transform: scale(1.05);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
             }
             100% {
                 transform: scale(1);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            }
+        }
+        
+        @keyframes moneyRain {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .money-rain {
+            position: absolute;
+            font-size: 24px;
+            animation: moneyRain 3s linear forwards;
+            z-index: 10;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+            
+            .game-board {
+                grid-template-columns: repeat(5, 60px);
+                grid-gap: 10px;
+            }
+            
+            .square {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .game-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .info-box p {
+                font-size: 1.4rem;
+            }
+            
+            .bet-display {
+                font-size: 1.2rem;
+                min-width: 80px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="casino-logo">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZTkzYzQ2IiBkPSJNNDQ4IDBINjRDMjguNyAwIDAgMjguNyAwIDY0djM4NGMwIDM1LjMgMjguNyA2NCA2NCA2NGgzODRjMzUuMyAwIDY0LTI4LjcgNjQtNjRWNjRjMC0zNS4zLTI4LjctNjQtNjQtNjR6TTIzMiAzODRjLTcwLjcgMC0xMjgtNTcuMy0xMjgtMTI4czU3LjMtMTI4IDEyOC0xMjhjMjQuNCAwIDQ3LjQgNi45IDY2LjggMTguOUwyNTYgMTQwLjJ2MjMuNmw4OS0yOS43YzIuOSAxMC4zIDQuNSAyMS4xIDQuNSAzMi4xIDAgNzAuNy01Ny4zIDEyOC0xMjggMTI4em0xMjgtMTI4YzAtMjYuNS04LjItNTEtMjIuMS03MS4ybC0xMDUuOSAzNS4ydjcyLjFsMTA1LjktMzUuMmMxMy45IDIwLjIgMjIuMSA0NC43IDIyLjEgNzEuMnptLTExMi0zMmMwLTguOC03LjItMTYtMTYtMTZzLTE2IDcuMi0xNiAxNiA3LjIgMTYgMTYgMTYgMTYtNy4yIDE2LTE2eiIvPjwvc3ZnPg==" alt="Casino Logo">
+        <h1>Bombastic</h1>
+    </div>
+    
     <div class="container">
-        <h1>Bomb Casino</h1>
-        <div class="score">Score: <span id="score">0</span></div>
-        <div class="game-board" id="gameBoard"></div>
-        <div class="controls">
-            <button id="newGameBtn">New Game</button>
-            <button id="cashOutBtn">Cash Out</button>
+        <div class="game-header">
+            <h2>Bomb Game</h2>
+            <p>Pick squares to win, but avoid the bombs!</p>
         </div>
+        
+        <div class="game-info">
+            <div class="info-box">
+                <h3>Balance</h3>
+                <p id="balance">100</p>
+            </div>
+            <div class="info-box">
+                <h3>Current Bet</h3>
+                <p id="currentBet">0</p>
+            </div>
+            <div class="info-box">
+                <h3>Potential Win</h3>
+                <p id="potentialWin">0</p>
+            </div>
+        </div>
+        
+        <div class="bet-controls">
+            <div class="bet-amount">
+                <button id="decreaseBet">-</button>
+                <div class="bet-display" id="betAmount">1</div>
+                <button id="increaseBet">+</button>
+            </div>
+            
+            <div class="game-controls">
+                <button id="newGameBtn">Start Game</button>
+                <button id="doubleBtn" class="double-btn" disabled>Double Bet (2 Bombs)</button>
+                <button id="cashOutBtn" disabled>Cash Out</button>
+            </div>
+        </div>
+        
+        <div class="game-board" id="gameBoard"></div>
     </div>
 
     <script>
+        // DOM Elements
         const gameBoard = document.getElementById('gameBoard');
-        const scoreElement = document.getElementById('score');
+        const balanceElement = document.getElementById('balance');
+        const currentBetElement = document.getElementById('currentBet');
+        const potentialWinElement = document.getElementById('potentialWin');
+        const betAmountElement = document.getElementById('betAmount');
         const newGameBtn = document.getElementById('newGameBtn');
+        const doubleBtn = document.getElementById('doubleBtn');
         const cashOutBtn = document.getElementById('cashOutBtn');
+        const decreaseBetBtn = document.getElementById('decreaseBet');
+        const increaseBetBtn = document.getElementById('increaseBet');
         
-        let score = 0;
-        let bombPosition;
+        // Game variables
+        let balance = 100;
+        let currentBet = 1;
+        let potentialWin = 0;
+        let bombPositions = [];
         let gameActive = false;
+        let isDoubled = false;
+        let selectedSquares = [];
         
-        // Initialize game
-        function initGame() {
+        // Initialize game board
+        function initGameBoard() {
             gameBoard.innerHTML = '';
-            score = 0;
-            scoreElement.textContent = score;
-            gameActive = true;
             
-            // Randomly select bomb position (0-24 for 5x5 grid)
-            bombPosition = Math.floor(Math.random() * 25);
-            
-            // Create squares
             for (let i = 0; i < 25; i++) {
                 const square = document.createElement('div');
                 square.className = 'square';
@@ -222,82 +562,237 @@
                 
                 gameBoard.appendChild(square);
             }
+        }
+        
+        // Start new game
+        function startNewGame() {
+            if (balance < currentBet) {
+                alert("Not enough balance for this bet!");
+                return;
+            }
+            
+            initGameBoard();
+            balance -= currentBet;
+            updateBalance();
+            
+            // Set bomb positions (1 or 2 bombs depending on double)
+            bombPositions = [];
+            const bombCount = isDoubled ? 2 : 1;
+            
+            while (bombPositions.length < bombCount) {
+                const randomPos = Math.floor(Math.random() * 25);
+                if (!bombPositions.includes(randomPos)) {
+                    bombPositions.push(randomPos);
+                }
+            }
+            
+            gameActive = true;
+            selectedSquares = [];
+            potentialWin = isDoubled ? currentBet * 2 : currentBet;
+            updatePotentialWin();
+            
+            // Enable/disable buttons
+            newGameBtn.disabled = true;
+            doubleBtn.disabled = true;
+            cashOutBtn.disabled = false;
             
             // Add pulse animation to all squares
             const squares = document.querySelectorAll('.square');
             squares.forEach(sq => sq.classList.add('pulse'));
         }
         
+        // Handle square click
         function handleSquareClick(index) {
-            if (!gameActive) return;
+            if (!gameActive || selectedSquares.includes(index)) return;
             
             const square = document.querySelector(`.square[data-index="${index}"]`);
-            
-            // Remove pulse animation
             square.classList.remove('pulse');
+            selectedSquares.push(index);
             
-            if (index === bombPosition) {
+            if (bombPositions.includes(index)) {
                 // Bomb clicked - game over
                 square.classList.add('bomb');
                 square.innerHTML = '💣';
                 gameActive = false;
                 
-                // Shake all squares
-                const squares = document.querySelectorAll('.square');
-                squares.forEach(sq => {
-                    sq.style.animation = 'shake 0.5s';
-                });
+                // Create explosion animation
+                createExplosion(square);
                 
+                // Update UI
+                newGameBtn.disabled = false;
+                doubleBtn.disabled = false;
+                cashOutBtn.disabled = true;
+                
+                // Show game over message
                 setTimeout(() => {
-                    alert(`Game Over! Your score: ${score}`);
-                    initGame();
-                }, 1000);
+                    alert(`Game Over! You lost ${currentBet} coins.`);
+                }, 800);
             } else {
-                // Safe square - continue
+                // Safe square - win
                 square.classList.add('win');
                 square.innerHTML = '💰';
-                score += 10;
-                scoreElement.textContent = score;
                 
-                // Create confetti effect
-                createConfetti(square);
+                // Calculate win amount based on bet range
+                let winAmount = 0;
+                if (currentBet <= 10) {
+                    winAmount = isDoubled ? 2 : 1;
+                } else if (currentBet <= 20) {
+                    winAmount = isDoubled ? 4 : 2;
+                } else {
+                    winAmount = isDoubled ? currentBet * 2 : currentBet;
+                }
+                
+                // Add to balance
+                balance += winAmount;
+                updateBalance();
+                
+                // Create money rain effect
+                createMoneyRain(square, winAmount);
+                
+                // Update potential win for next selection
+                potentialWin = isDoubled ? winAmount * 2 : winAmount;
+                updatePotentialWin();
             }
         }
         
-        function createConfetti(element) {
-            const rect = element.getBoundingClientRect();
-            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
-            
-            for (let i = 0; i < 20; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = `${rect.left + rect.width / 2}px`;
-                confetti.style.top = `${rect.top + rect.height / 2}px`;
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                document.body.appendChild(confetti);
-                
-                // Remove confetti after animation
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-        
+        // Cash out
         function cashOut() {
-            if (!gameActive || score === 0) return;
+            if (!gameActive) return;
             
             gameActive = false;
-            alert(`You cashed out with ${score} points! Starting new game...`);
-            initGame();
+            alert(`You cashed out and won ${potentialWin} coins!`);
+            
+            // Update UI
+            newGameBtn.disabled = false;
+            doubleBtn.disabled = false;
+            cashOutBtn.disabled = true;
+        }
+        
+        // Toggle double bet
+        function toggleDouble() {
+            isDoubled = !isDoubled;
+            doubleBtn.textContent = isDoubled ? 'Regular Bet (1 Bomb)' : 'Double Bet (2 Bombs)';
+            potentialWin = isDoubled ? currentBet * 2 : currentBet;
+            updatePotentialWin();
+        }
+        
+        // Update bet amount
+        function updateBet(amount) {
+            currentBet = Math.max(1, Math.min(100, currentBet + amount));
+            betAmountElement.textContent = currentBet;
+            potentialWin = isDoubled ? currentBet * 2 : currentBet;
+            updatePotentialWin();
+        }
+        
+        // Update balance display
+        function updateBalance() {
+            balanceElement.textContent = balance;
+            animateValue(balanceElement, parseInt(balanceElement.textContent), balance, 500);
+        }
+        
+        // Update current bet display
+        function updateCurrentBet() {
+            currentBetElement.textContent = currentBet;
+            animateValue(currentBetElement, parseInt(currentBetElement.textContent), currentBet, 500);
+        }
+        
+        // Update potential win display
+        function updatePotentialWin() {
+            potentialWinElement.textContent = potentialWin;
+            animateValue(potentialWinElement, parseInt(potentialWinElement.textContent), potentialWin, 500);
+        }
+        
+        // Animate number changes
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Create explosion effect
+        function createExplosion(element) {
+            const rect = element.getBoundingClientRect();
+            const explosion = document.createElement('div');
+            explosion.className = 'bomb-animation';
+            explosion.style.left = `${rect.left + rect.width/2 - 50}px`;
+            explosion.style.top = `${rect.top + rect.height/2 - 50}px`;
+            document.body.appendChild(explosion);
+            
+            setTimeout(() => {
+                explosion.remove();
+            }, 800);
+        }
+        
+        // Create money rain effect
+        function createMoneyRain(element, amount) {
+            const rect = element.getBoundingClientRect();
+            const moneySymbols = ['💰', '💵', '💶', '💷', '💴'];
+            
+            for (let i = 0; i < 15; i++) {
+                const money = document.createElement('div');
+                money.className = 'money-rain';
+                money.textContent = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
+                money.style.left = `${rect.left + Math.random() * rect.width}px`;
+                money.style.top = `${rect.top + Math.random() * rect.height}px`;
+                money.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                document.body.appendChild(money);
+                
+                setTimeout(() => {
+                    money.remove();
+                }, 3000);
+            }
+            
+            // Create chips falling effect
+            for (let i = 0; i < 5; i++) {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.textContent = amount > 9 ? amount/5 : amount;
+                chip.style.left = `${rect.left + rect.width/2 - 15 + Math.random() * 30}px`;
+                chip.style.top = `${rect.top - 50}px`;
+                chip.style.animationDelay = `${i * 0.2}s`;
+                document.body.appendChild(chip);
+                
+                setTimeout(() => {
+                    chip.remove();
+                }, 3000);
+            }
         }
         
         // Event listeners
-        newGameBtn.addEventListener('click', initGame);
+        newGameBtn.addEventListener('click', startNewGame);
         cashOutBtn.addEventListener('click', cashOut);
+        doubleBtn.addEventListener('click', toggleDouble);
+        decreaseBetBtn.addEventListener('click', () => updateBet(-1));
+        increaseBetBtn.addEventListener('click', () => updateBet(1));
         
-        // Start first game
-        initGame();
+        // Initialize
+        initGameBoard();
+        updateBalance();
+        updateCurrentBet();
+        updatePotentialWin();
+        
+        // Add floating chips in background
+        setInterval(() => {
+            if (document.hidden) return;
+            
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.style.left = `${Math.random() * 100}vw`;
+            chip.style.top = '-30px';
+            chip.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            document.body.appendChild(chip);
+            
+            setTimeout(() => {
+                chip.remove();
+            }, 5000);
+        }, 1000);
     </script>
 </body>
 </html>
