@@ -3,128 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Bomb Casino</title>
+    <title>Căutătorul de Comori</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap');
-        
-        :root {
-            --primary: #e63946;
-            --secondary: #457b9d;
-            --accent: #f4a261;
-            --dark: #1d3557;
-            --light: #f1faee;
-            --win: #48c774;
-            --bomb: #e63946;
-        }
-        
-        * {
-            box-sizing: border-box;
-        }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, #0a0a20, #2a0a4a, #4a0a60); /* Nuanțe de violet și albastru închis, mai misterios */
             height: 100vh;
             margin: 0;
-            display: flex;
-            color: var(--light);
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .casino-logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            animation: logoGlow 3s infinite alternate;
-        }
-        
-        .casino-logo img {
-            height: 50px;
-            margin-right: 15px;
-        }
-        
-        .casino-logo h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            margin: 0;
-            background: linear-gradient(to right, #f4a261, #e9c46a);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(233, 196, 106, 0.3);
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            color: white;
+            overflow: hidden; /* Previne scroll-ul */
             position: relative;
-            z-index: 1;
-            padding: 20px;
         }
-        
-        .game-header {
-            text-align: center;
-            margin-bottom: 20px;
+
+        /* Fundal animat subtil */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 50%);
+            animation: backgroundShift 20s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes backgroundShift {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
         }
         
-        .game-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin: 0;
-            background: linear-gradient(to right, #f4a261, #e9c46a);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(233, 196, 106, 0.3);
-            animation: textFloat 4s ease-in-out infinite;
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.4); /* Fundal mai închis și mai transparent */
+            padding: 40px 60px; /* Padding mărit */
+            border-radius: 25px; /* Colțuri mai rotunde */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* Umbră mai pronunțată */
+            backdrop-filter: blur(8px); /* Efect de blur mai intens */
+            border: 2px solid rgba(255, 255, 255, 0.1); /* Margine subtilă */
+            max-width: 90vw; /* Asigură că nu depășește lățimea ecranului */
+            max-height: 90vh; /* Asigură că nu depășește înălțimea ecranului */
+            display: flex; /* Folosim flexbox pentru a centra conținutul în container */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .game-header p {
-            margin: 10px 0 0;
-            font-size: 1.1rem;
-            opacity: 0.8;
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); /* Dimensiune text responsivă */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 215, 0, 0.8);
+            margin-bottom: 10px;
+            animation: textGlow 2.5s infinite alternate;
+            letter-spacing: 4px; /* Spațiere mai mare între litere */
+            white-space: nowrap; /* Asigură că titlul rămâne pe o singură linie */
         }
-        
+
+        .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.4rem); /* Dimensiune text responsivă */
+            margin-bottom: 30px;
+            color: #FFEA00; /* Galben mai aprins */
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        }
+
         .game-board {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-gap: 15px;
-            margin: 20px auto;
+            grid-template-columns: repeat(5, clamp(60px, 15vw, 100px)); /* Dimensiune responsivă pentru pătrate */
+            grid-gap: clamp(10px, 2vw, 25px); /* Spațiu responsiv între pătrate */
+            margin: 30px auto;
             perspective: 1000px;
-            position: relative;
-            width: 100%;
-            max-width: 500px;
         }
-        
+
         .square {
-            aspect-ratio: 1/1;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
+            width: clamp(60px, 15vw, 100px); /* Lățime responsivă */
+            height: clamp(60px, 15vw, 100px); /* Înălțime responsivă */
+            background: linear-gradient(145deg, #1f1f3a, #3a3a5a); /* Nuanțe de violet mai închise */
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: clamp(24px, 6vw, 40px); /* Iconițe responsive */
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease-out;
             transform-style: preserve-3d;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); /* Umbră mai adâncă */
             position: relative;
             overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            transform: rotateY(0deg);
         }
         
+        .square.flipped {
+            transform: rotateY(180deg);
+        }
+
         .square::before {
             content: '';
             position: absolute;
@@ -134,914 +114,384 @@
             height: 200%;
             background: linear-gradient(
                 to bottom right,
-                rgba(255, 255, 255, 0.15),
+                rgba(255, 255, 255, 0.2), /* Sclipire mai vizibilă */
                 rgba(255, 255, 255, 0)
             );
             transform: rotate(45deg);
-            animation: shine 4s infinite;
-            opacity: 0.5;
+            animation: shine 3s infinite;
+            opacity: 0.7;
         }
-        
+
         .square:hover {
-            transform: translateY(-5px) rotateX(10deg);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-10px) scale(1.05); /* Efect de "ridicare" mai accentuat */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(145deg, #3a3a5a, #1f1f3a);
+            border-color: rgba(255, 255, 255, 0.4);
         }
-        
-        .square.win {
-            background: linear-gradient(135deg, rgba(72, 199, 116, 0.8), rgba(42, 157, 143, 0.8));
-            transform: rotateY(180deg);
-            box-shadow: 0 0 30px rgba(72, 199, 116, 0.6);
+
+        .square.revealed-safe {
+            background: linear-gradient(135deg, #6BFF8C, #2ECC71); /* Verde smarald mai vibrant */
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(107, 255, 140, 0.7);
+            border-color: #B2FFC6;
+            animation: foundTreasure 0.6s ease-out; /* Animație puțin mai lungă */
         }
-        
-        .square.bomb {
-            background: linear-gradient(135deg, rgba(230, 57, 70, 0.8), rgba(233, 30, 99, 0.8));
-            transform: rotateY(180deg);
-            box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
-            animation: explode 0.8s forwards;
+
+        .square.revealed-mine {
+            background: linear-gradient(135deg, #FF6B6B, #E74C3C); /* Roșu mai intens */
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.7);
+            border-color: #FFB2B2;
+            animation: mineExplode 0.8s forwards; /* Animație puțin mai lungă */
         }
-        
-        .game-info {
+
+        .controls {
+            margin-top: 40px; /* Spațiu mai mare */
             display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 600px;
-            margin: 20px auto;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .info-box {
-            text-align: center;
-            padding: 0 10px;
-            flex: 1;
-        }
-        
-        .info-box h3 {
-            margin: 0 0 5px;
-            font-size: 0.9rem;
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .info-box p {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: white;
-        }
-        
-        .bet-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 600px;
-        }
-        
-        .bet-amount {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        
-        .bet-amount input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            text-align: center;
-            width: 100px;
-            margin: 0 10px;
-            outline: none;
-        }
-        
-        .bet-amount button {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            font-size: 1.5rem;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
+            gap: clamp(10px, 3vw, 30px); /* Spațiu responsiv între butoane */
+            flex-wrap: wrap; /* Butoanele pot trece pe rândul următor pe ecrane mici */
             justify-content: center;
         }
-        
-        .bet-amount button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-        
-        .multiplier-controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        
-        .multiplier-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 50px;
-        }
-        
-        .multiplier-btn.active {
-            background: linear-gradient(135deg, var(--accent), #e9c46a);
-            color: var(--dark);
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(244, 162, 97, 0.5);
-        }
-        
-        .multiplier-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .game-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-            flex-wrap: wrap;
-        }
-        
+
         button {
-            background: linear-gradient(135deg, var(--accent), #e9c46a);
+            background: linear-gradient(135deg, #FFD700, #FFA500); /* Butoane aurii */
             border: none;
-            color: var(--dark);
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: 600;
+            color: #333;
+            padding: 15px 35px; /* Padding mărit */
+            font-size: clamp(0.9rem, 2vw, 1.2rem); /* Dimensiune text responsivă */
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             outline: none;
-            box-shadow: 0 5px 15px rgba(244, 162, 97, 0.4);
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
             text-transform: uppercase;
             letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-            min-width: 150px;
         }
-        
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: 0.5s;
-        }
-        
+
         button:hover {
+            transform: translateY(-7px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #FFA500, #FFD700);
+        }
+
+        button:active {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(244, 162, 97, 0.6);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        
-        button:hover::before {
-            left: 100%;
+
+        .score {
+            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Dimensiune text responsivă */
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            color: #FFD700;
         }
-        
-        button:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            cursor: not-allowed;
-            box-shadow: none;
+
+        .score span {
+            transition: transform 0.2s ease-out, color 0.2s ease-out;
+            display: inline-block;
         }
-        
-        button:disabled:hover {
-            transform: none;
+
+        .score span.score-pulse {
+            animation: scorePulse 0.3s ease-out;
+            color: #A5FF75;
         }
-        
-        .double-btn {
-            background: linear-gradient(135deg, #457b9d, #1d3557);
-            color: white;
-            box-shadow: 0 5px 15px rgba(29, 53, 87, 0.4);
-        }
-        
-        .double-btn:hover:not(:disabled) {
-            box-shadow: 0 8px 20px rgba(29, 53, 87, 0.6);
-        }
-        
+
         .confetti {
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: var(--accent);
+            width: clamp(8px, 2vw, 12px);
+            height: clamp(8px, 2vw, 12px);
+            background-color: #f00;
             border-radius: 50%;
             animation: fall 5s linear forwards;
-            z-index: 10;
-        }
-        
-        .chip {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: radial-gradient(circle at center, var(--accent) 30%, #e9c46a 100%);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            animation: chipFall 3s ease-in forwards;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--dark);
-            font-weight: bold;
-            font-size: 12px;
-        }
-        
-        .bomb-animation {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, #ff0 0%, #f80 50%, #f00 100%);
-            border-radius: 50%;
-            animation: bombExplode 0.8s ease-out forwards;
-            z-index: 20;
             pointer-events: none;
-            transform: scale(0);
-            opacity: 0.8;
+            z-index: 0;
         }
         
-        .pulse {
-            animation: pulse 1.5s infinite;
-        }
-        
-        .jackpot-animation {
-            position: fixed;
+        .game-overlay {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%);
+            background: rgba(0, 0, 0, 0.85); /* Fundal mai închis pentru overlay */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 100;
-            animation: fadeIn 0.5s forwards;
-        }
-        
-        .jackpot-text {
-            font-size: 4rem;
-            font-weight: bold;
-            background: linear-gradient(to right, #f4a261, #e9c46a, #f4a261);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(244, 162, 97, 0.7);
-            animation: jackpotPulse 2s infinite;
-            margin-bottom: 20px;
-        }
-        
-        .jackpot-amount {
-            font-size: 3rem;
+            z-index: 100; /* Asigură că e deasupra tuturor */
             color: white;
-            animation: jackpotFloat 3s infinite;
+            font-size: clamp(2rem, 6vw, 3.5rem); /* Dimensiune text responsivă */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
         }
-        
-        @keyframes logoGlow {
-            0% {
-                filter: drop-shadow(0 0 5px rgba(244, 162, 97, 0.5));
-            }
-            100% {
-                filter: drop-shadow(0 0 15px rgba(244, 162, 97, 0.9));
-            }
+
+        .game-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
-        
-        @keyframes textFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+
+        .overlay-content {
+            background: rgba(10, 10, 20, 0.9); /* Fundal mai solid pentru conținutul overlay-ului */
+            padding: clamp(30px, 8vw, 60px);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+            animation: overlayAppear 0.8s ease-out;
+        }
+
+        .overlay-message {
+            margin-bottom: 30px;
+            font-size: clamp(2.2rem, 7vw, 4rem);
+            color: #FFEA00;
+            animation: textGlow 1.8s infinite alternate;
+        }
+
+        .overlay-score {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 40px;
+            color: #B2FFC6; /* Verde deschis pentru scor final */
+        }
+
+        /* Animații (rămân la fel sau ușor ajustate pentru fluiditate) */
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 215, 0, 0.4); }
+            to { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 215, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.5); }
         }
         
         @keyframes shine {
-            0% {
-                transform: rotate(45deg) translate(-30%, -30%);
-            }
-            100% {
-                transform: rotate(45deg) translate(30%, 30%);
-            }
+            0% { transform: rotate(45deg) translate(-10%, -10%); }
+            100% { transform: rotate(45deg) translate(10%, 10%); }
         }
         
-        @keyframes explode {
-            0% {
-                transform: rotateY(180deg) scale(1);
-                box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
-            }
-            50% {
-                transform: rotateY(180deg) scale(1.3);
-                box-shadow: 0 0 60px rgba(230, 57, 70, 0.9);
-            }
-            100% {
-                transform: rotateY(180deg) scale(1);
-                box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
-            }
+        @keyframes mineExplode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.8; box-shadow: 0 0 50px rgba(255, 107, 107, 1); }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes foundTreasure {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(107, 255, 140, 0.9); }
+            100% { transform: scale(1); }
         }
         
         @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
         
-        @keyframes chipFall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(calc(100vh + 100px)) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        @keyframes bombExplode {
-            0% {
-                transform: scale(0);
-                opacity: 0.8;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.9;
-            }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
+        .pulse {
+            animation: pulse 1s infinite;
         }
         
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-        
-        @keyframes moneyRain {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
+
+        @keyframes scorePulse {
+            0% { transform: scale(1); color: #A5FF75; }
+            50% { transform: scale(1.18); color: #FFD700; }
+            100% { transform: scale(1); color: #FFD700; }
         }
-        
-        @keyframes jackpotPulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
+
+        @keyframes overlayAppear {
+            0% { transform: translateY(-80px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
         }
-        
-        @keyframes jackpotFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        
-        /* Responsive adjustments */
+
+        /* Media Queries pentru ajustări fine pe ecrane mici */
         @media (max-width: 768px) {
             .container {
-                width: 95%;
-                padding: 10px;
+                padding: 30px;
             }
-            
-            .game-header h2 {
-                font-size: 1.8rem;
+            .game-board {
+                grid-template-columns: repeat(5, clamp(50px, 16vw, 80px));
+                grid-gap: clamp(8px, 1.5vw, 15px);
             }
-            
-            .info-box p {
-                font-size: 1.2rem;
-            }
-            
-            .bet-amount input {
-                font-size: 1rem;
-                width: 80px;
-            }
-            
-            .multiplier-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-                min-width: 40px;
-            }
-            
-            button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-                min-width: 120px;
-            }
-            
-            .jackpot-text {
-                font-size: 2.5rem;
-            }
-            
-            .jackpot-amount {
-                font-size: 2rem;
+            .square {
+                width: clamp(50px, 16vw, 80px);
+                height: clamp(50px, 16vw, 80px);
+                font-size: clamp(20px, 5vw, 30px);
             }
         }
+
+        @media (max-width: 480px) {
+            h1 {
+                letter-spacing: 2px;
+            }
+            .controls button {
+                padding: 12px 20px;
+                font-size: clamp(0.8rem, 3vw, 1rem);
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div class="casino-logo">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZTkzYzQ2IiBkPSJNNDQ4IDBINjRDMjguNyAwIDAgMjguNyAwIDY0djM4NGMwIDM1LjMgMjguNyA2NCA2NCA2NGgzODRjMzUuMyAwIDY0LTI4LjcgNjQtNjRWNjRjMC0zNS4zLTI4LjctNjQtNjQtNjR6TTIzMiAzODRjLTcwLjcgMC0xMjgtNTcuMy0xMjgtMTI4czU3LjMtMTI4IDEyOC0xMjhjMjQuNCAwIDQ3LjQgNi45IDY2LjggMTguOUwyNTYgMTQwLjJ2MjMuNmw4OS0yOS43YzIuOSAxMC4zIDQuNSAyMS4xIDQuNSAzMi4xIDAgNzAuNy01Ny4zIDEyOC0xMjggMTI4em0xMjgtMTI4YzAtMjYuNS04LjItNTEtMjIuMS03MS4ybC0xMDUuOSAzNS4ydjcyLjFsMTA1LjktMzUuMmMxMy45IDIwLjIgMjIuMSA0NC43IDIyLjEgNzEuMnptLTExMi0zMmMwLTguOC03LjItMTYtMTYtMTZzLTE2IDcuMi0xNiAxNiA3LjIgMTYgMTYgMTYgMTYtNy4yIDE2LTE2eiIvPjwvc3ZnPg==" alt="Casino Logo">
-        <h1>Bombastic</h1>
-    </div>
-    
     <div class="container">
-        <div class="game-header">
-            <h2>Bomb Game</h2>
-            <p>Pick squares to win, but avoid the bombs!</p>
-        </div>
-        
-        <div class="game-info">
-            <div class="info-box">
-                <h3>Balance</h3>
-                <p id="balance">100</p>
-            </div>
-            <div class="info-box">
-                <h3>Current Bet</h3>
-                <p id="currentBet">0</p>
-            </div>
-            <div class="info-box">
-                <h3>Multiplier</h3>
-                <p id="currentMultiplier">1x</p>
-            </div>
-            <div class="info-box">
-                <h3>Potential Win</h3>
-                <p id="potentialWin">0</p>
-            </div>
-        </div>
-        
-        <div class="bet-controls">
-            <div class="bet-amount">
-                <button id="decreaseBet">-</button>
-                <input type="number" id="betInput" min="1" max="1000" value="1">
-                <button id="increaseBet">+</button>
-            </div>
-            
-            <div class="multiplier-controls">
-                <button class="multiplier-btn active" data-multiplier="1">1x (1 Bomb)</button>
-                <button class="multiplier-btn" data-multiplier="2">2x (2 Bombs)</button>
-                <button class="multiplier-btn" data-multiplier="3">3x (3 Bombs)</button>
-                <button class="multiplier-btn" data-multiplier="5">5x (5 Bombs)</button>
-                <button class="multiplier-btn" data-multiplier="10">10x (10 Bombs)</button>
-            </div>
-            
-            <div class="game-controls">
-                <button id="startGameBtn">Start Game</button>
-                <button id="cashOutBtn" disabled>Cash Out</button>
-                <button id="resetGameBtn">Reset Game</button>
-            </div>
-        </div>
-        
+        <h1>Căutătorul de Comori</h1>
+        <div class="subtitle">Descoperă comorile, evită capcanele ascunse!</div>
+        <div class="score">Comori: <span id="score">0</span></div>
         <div class="game-board" id="gameBoard"></div>
+        <div class="controls">
+            <button id="newGameBtn">Joc Nou</button>
+            <button id="collectBtn">Colecționează Comori</button>
+        </div>
+    </div>
+
+    <div class="game-overlay" id="gameOverlay">
+        <div class="overlay-content">
+            <div class="overlay-message" id="overlayMessage"></div>
+            <div class="overlay-score">Comori Colectate: <span id="finalScore">0</span></div>
+            <button id="restartGameBtn">Joacă Din Nou</button>
+        </div>
     </div>
 
     <script>
-        // DOM Elements
         const gameBoard = document.getElementById('gameBoard');
-        const balanceElement = document.getElementById('balance');
-        const currentBetElement = document.getElementById('currentBet');
-        const currentMultiplierElement = document.getElementById('currentMultiplier');
-        const potentialWinElement = document.getElementById('potentialWin');
-        const betInput = document.getElementById('betInput');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const cashOutBtn = document.getElementById('cashOutBtn');
-        const resetGameBtn = document.getElementById('resetGameBtn');
-        const decreaseBetBtn = document.getElementById('decreaseBet');
-        const increaseBetBtn = document.getElementById('increaseBet');
-        const multiplierBtns = document.querySelectorAll('.multiplier-btn');
+        const scoreElement = document.getElementById('score');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const collectBtn = document.getElementById('collectBtn');
+        const gameOverlay = document.getElementById('gameOverlay');
+        const overlayMessage = document.getElementById('overlayMessage');
+        const finalScoreElement = document.getElementById('finalScore');
+        const restartGameBtn = document.getElementById('restartGameBtn');
         
-        // Game variables
-        let balance = 100;
-        let currentBet = 1;
-        let multiplier = 1;
-        let potentialWin = 0;
-        let bombPositions = [];
+        let score = 0;
+        let minePosition;
         let gameActive = false;
-        let selectedSquares = [];
-        let currentWin = 0;
         
-        // Initialize game board
-        function initGameBoard() {
+        // Initialize game
+        function initGame() {
             gameBoard.innerHTML = '';
+            score = 0;
+            scoreElement.textContent = score;
+            gameActive = true;
+            gameOverlay.classList.remove('active'); 
+            
+            minePosition = Math.floor(Math.random() * 25);
             
             for (let i = 0; i < 25; i++) {
                 const square = document.createElement('div');
                 square.className = 'square';
                 square.dataset.index = i;
-                
                 square.addEventListener('click', () => handleSquareClick(i));
-                
                 gameBoard.appendChild(square);
             }
-        }
-        
-        // Start new game
-        function startGame() {
-            const bet = parseInt(betInput.value);
             
-            if (isNaN(bet) || bet < 1) {
-                alert("Please enter a valid bet amount!");
-                return;
-            }
-            
-            if (balance < bet) {
-                alert("Not enough balance for this bet!");
-                return;
-            }
-            
-            initGameBoard();
-            currentBet = bet;
-            updateCurrentBet();
-            
-            balance -= currentBet;
-            updateBalance();
-            
-            // Set bomb positions based on multiplier
-            bombPositions = [];
-            const bombCount = multiplier;
-            
-            while (bombPositions.length < bombCount) {
-                const randomPos = Math.floor(Math.random() * 25);
-                if (!bombPositions.includes(randomPos)) {
-                    bombPositions.push(randomPos);
-                }
-            }
-            
-            gameActive = true;
-            selectedSquares = [];
-            currentWin = 0;
-            potentialWin = currentBet * multiplier;
-            updatePotentialWin();
-            
-            // Enable/disable buttons
-            startGameBtn.disabled = true;
-            cashOutBtn.disabled = false;
-            resetGameBtn.disabled = true;
-            betInput.disabled = true;
-            decreaseBetBtn.disabled = true;
-            increaseBetBtn.disabled = true;
-            multiplierBtns.forEach(btn => btn.disabled = true);
-            
-            // Add pulse animation to all squares
             const squares = document.querySelectorAll('.square');
             squares.forEach(sq => sq.classList.add('pulse'));
-            
-            // Show bomb count info
-            alert(`Game started with ${multiplier}x multiplier (${bombCount} bombs)!`);
         }
         
-        // Handle square click
         function handleSquareClick(index) {
-            if (!gameActive || selectedSquares.includes(index)) return;
-            
-            const square = document.querySelector(`.square[data-index="${index}"]');
-            square.classList.remove('pulse');
-            selectedSquares.push(index);
-            
-            if (bombPositions.includes(index)) {
-                // Bomb clicked - game over
-                square.classList.add('bomb');
-                square.innerHTML = '💣';
-                gameActive = false;
-                
-                // Create explosion animation
-                createExplosion(square);
-                
-                // Update UI
-                startGameBtn.disabled = false;
-                cashOutBtn.disabled = true;
-                resetGameBtn.disabled = false;
-                betInput.disabled = false;
-                decreaseBetBtn.disabled = false;
-                increaseBetBtn.disabled = false;
-                multiplierBtns.forEach(btn => btn.disabled = false);
-                
-                // Show game over message
-                setTimeout(() => {
-                    alert(`Game Over! You hit a bomb and lost ${currentBet} coins.`);
-                }, 800);
-            } else {
-                // Safe square - win
-                square.classList.add('win');
-                square.innerHTML = '💰';
-                
-                // Calculate win amount based on multiplier
-                const winAmount = currentBet * multiplier;
-                currentWin += winAmount;
-                balance += winAmount;
-                updateBalance();
-                
-                // Create money rain effect
-                createMoneyRain(square, winAmount);
-                
-                // Update potential win for next selection
-                potentialWin = currentBet * multiplier;
-                updatePotentialWin();
-                
-                // Check if all safe squares are selected
-                if (selectedSquares.length === 25 - bombPositions.length) {
-                    gameActive = false;
-                    startGameBtn.disabled = false;
-                    cashOutBtn.disabled = true;
-                    resetGameBtn.disabled = false;
-                    betInput.disabled = false;
-                    decreaseBetBtn.disabled = false;
-                    increaseBetBtn.disabled = false;
-                    multiplierBtns.forEach(btn => btn.disabled = false);
-                    
-                    // Show jackpot animation for big wins
-                    if (currentWin >= currentBet * 5) {
-                        showJackpotAnimation(currentWin);
-                    } else {
-                        alert(`Congratulations! You won ${currentWin} coins!`);
-                    }
-                }
-            }
-        }
-        
-        // Cash out
-        function cashOut() {
             if (!gameActive) return;
             
+            const square = document.querySelector(`.square[data-index="${index}"]`);
+            
+            if (square.classList.contains('revealed-safe') || square.classList.contains('revealed-mine') || square.classList.contains('flipped')) {
+                return;
+            }
+
+            square.classList.add('flipped');
+
+            setTimeout(() => {
+                square.classList.remove('pulse'); 
+                
+                if (index === minePosition) {
+                    square.classList.add('revealed-mine');
+                    square.innerHTML = '💥'; 
+                    gameActive = false;
+                    
+                    revealAllSquares();
+                    
+                    setTimeout(() => {
+                        showOverlay('Ai dat de o capcană!', score);
+                    }, 1200); 
+                } else {
+                    square.classList.add('revealed-safe');
+                    square.innerHTML = '💎'; 
+                    score += 10;
+                    scoreElement.textContent = score;
+
+                    scoreElement.classList.add('score-pulse');
+                    setTimeout(() => {
+                        scoreElement.classList.remove('score-pulse');
+                    }, 300);
+                    
+                    createConfetti(square);
+                }
+            }, 300); 
+        }
+
+        function revealAllSquares() {
+            const squares = document.querySelectorAll('.square');
+            squares.forEach((sq, i) => {
+                if (!sq.classList.contains('revealed-safe') && !sq.classList.contains('revealed-mine')) {
+                    sq.classList.add('flipped');
+                    sq.classList.remove('pulse'); 
+                    setTimeout(() => {
+                        if (i === minePosition) {
+                            sq.classList.add('revealed-mine');
+                            sq.innerHTML = '💥';
+                        } else {
+                            sq.classList.add('revealed-safe');
+                            sq.innerHTML = '💎';
+                        }
+                    }, 300 + (i * 20)); 
+                }
+            });
+        }
+        
+        function createConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const colors = ['#FFD700', '#FF4500', '#ADFF2F', '#00FFFF', '#FF69B4', '#EE82EE']; 
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                const startX = rect.left + rect.width / 2 + (Math.random() - 0.5) * rect.width;
+                const startY = rect.top + rect.height / 2 + (Math.random() - 0.5) * rect.height;
+
+                confetti.style.left = `${startX}px`;
+                confetti.style.top = `${startY}px`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = `${Math.random() * 2 + 3}s`; 
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`; 
+                confetti.style.transform = `translateY(0) rotate(0deg)`; 
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, parseFloat(confetti.style.animationDuration) * 1000 + parseFloat(confetti.style.animationDelay) * 1000 + 100);
+            }
+        }
+        
+        function collectTreasures() {
+            if (!gameActive || score === 0) {
+                showOverlay("Nu ai comori de colectat încă sau jocul s-a terminat!", score);
+                return;
+            }
+            
             gameActive = false;
-            
-            // Show jackpot animation for big wins
-            if (currentWin >= currentBet * 5) {
-                showJackpotAnimation(currentWin);
-            } else {
-                alert(`You cashed out and won ${currentWin} coins!`);
-            }
-            
-            // Update UI
-            startGameBtn.disabled = false;
-            cashOutBtn.disabled = true;
-            resetGameBtn.disabled = false;
-            betInput.disabled = false;
-            decreaseBetBtn.disabled = false;
-            increaseBetBtn.disabled = false;
-            multiplierBtns.forEach(btn => btn.disabled = false);
+            showOverlay('Ai colectat cu succes comorile!', score);
+        }
+
+        function showOverlay(message, finalScore) {
+            overlayMessage.textContent = message;
+            finalScoreElement.textContent = finalScore;
+            gameOverlay.classList.add('active');
         }
         
-        // Reset game
-        function resetGame() {
-            balance = 100;
-            currentBet = 1;
-            multiplier = 1;
-            potentialWin = 0;
-            betInput.value = "1";
-            updateBalance();
-            updateCurrentBet();
-            updateMultiplier();
-            updatePotentialWin();
-            
-            // Reset multiplier buttons
-            multiplierBtns.forEach(btn => {
-                btn.classList.remove('active');
-                if (parseInt(btn.dataset.multiplier) === 1) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            initGameBoard();
-            
-            // Enable/disable buttons
-            startGameBtn.disabled = false;
-            cashOutBtn.disabled = true;
-            resetGameBtn.disabled = false;
-            betInput.disabled = false;
-            decreaseBetBtn.disabled = false;
-            increaseBetBtn.disabled = false;
-            multiplierBtns.forEach(btn => btn.disabled = false);
-        }
+        newGameBtn.addEventListener('click', initGame);
+        collectBtn.addEventListener('click', collectTreasures);
+        restartGameBtn.addEventListener('click', initGame); 
         
-        // Update bet amount
-        function updateBet(amount) {
-            let newBet = parseInt(betInput.value) + amount;
-            newBet = Math.max(1, Math.min(1000, newBet));
-            betInput.value = newBet;
-            currentBet = newBet;
-            potentialWin = currentBet * multiplier;
-            updatePotentialWin();
-        }
-        
-        // Set multiplier
-        function setMultiplier(newMultiplier) {
-            multiplier = newMultiplier;
-            updateMultiplier();
-            potentialWin = currentBet * multiplier;
-            updatePotentialWin();
-        }
-        
-        // Update balance display
-        function updateBalance() {
-            animateValue(balanceElement, parseInt(balanceElement.textContent), balance, 500);
-        }
-        
-        // Update current bet display
-        function updateCurrentBet() {
-            animateValue(currentBetElement, parseInt(currentBetElement.textContent), currentBet, 500);
-        }
-        
-        // Update multiplier display
-        function updateMultiplier() {
-            currentMultiplierElement.textContent = `${multiplier}x`;
-        }
-        
-        // Update potential win display
-        function updatePotentialWin() {
-            animateValue(potentialWinElement, parseInt(potentialWinElement.textContent), potentialWin, 500);
-        }
-        
-        // Animate number changes
-        function animateValue(element, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                element.textContent = Math.floor(progress * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-        
-        // Create explosion effect
-        function createExplosion(element) {
-            const rect = element.getBoundingClientRect();
-            const explosion = document.createElement('div');
-            explosion.className = 'bomb-animation';
-            explosion.style.left = `${rect.left + rect.width/2 - 50}px`;
-            explosion.style.top = `${rect.top + rect.height/2 - 50}px`;
-            document.body.appendChild(explosion);
-            
-            setTimeout(() => {
-                explosion.remove();
-            }, 800);
-        }
-        
-        // Create money rain effect
-        function createMoneyRain(element, amount) {
-            const rect = element.getBoundingClientRect();
-            const moneySymbols = ['💰', '💵', '💶', '💷', '💴'];
-            
-            for (let i = 0; i < 15; i++) {
-                const money = document.createElement('div');
-                money.className = 'money-rain';
-                money.textContent = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
-                money.style.left = `${rect.left + Math.random() * rect.width}px`;
-                money.style.top = `${rect.top + Math.random() * rect.height}px`;
-                money.style.animationDuration = `${Math.random() * 2 + 1}s`;
-                document.body.appendChild(money);
-                
-                setTimeout(() => {
-                    money.remove();
-                }, 3000);
-            }
-            
-            // Create chips falling effect
-            for (let i = 0; i < 5; i++) {
-                const chip = document.createElement('div');
-                chip.className = 'chip';
-                chip.textContent = amount > 9 ? Math.floor(amount/5) : amount;
-                chip.style.left = `${rect.left + rect.width/2 - 15 + Math.random() * 30}px`;
-                chip.style.top = `${rect.top - 50}px`;
-                chip.style.animationDelay = `${i * 0.2}s`;
-                document.body.appendChild(chip);
-                
-                setTimeout(() => {
-                    chip.remove();
-                }, 3000);
-            }
-        }
-        
-        // Show jackpot animation
-        function showJackpotAnimation(amount) {
-            const jackpot = document.createElement('div');
-            jackpot.className = 'jackpot-animation';
-            
-            const jackpotText = document.createElement('div');
-            jackpotText.className = 'jackpot-text';
-            jackpotText.textContent = 'JACKPOT!';
-            
-            const jackpotAmount = document.createElement('div');
-            jackpotAmount.className = 'jackpot-amount';
-            jackpotAmount.textContent = `+${amount} coins!`;
-            
-            jackpot.appendChild(jackpotText);
-            jackpot.appendChild(jackpotAmount);
-            document.body.appendChild(jackpot);
-            
-            setTimeout(() => {
-                jackpot.remove();
-            }, 3000);
-        }
-        
-        // Event listeners
-        startGameBtn.addEventListener('click', startGame);
-        cashOutBtn.addEventListener('click', cashOut);
-        resetGameBtn.addEventListener('click', resetGame);
-        decreaseBetBtn.addEventListener('click', () => updateBet(-1));
-        increaseBetBtn.addEventListener('click', () => updateBet(1));
-        
-        betInput.addEventListener('input', (e) => {
-            let value = parseInt(e.target.value);
-            if (isNaN(value) || value < 1) value = 1;
-            if (value > 1000) value = 1000;
-            e.target.value = value;
-            currentBet = value;
-            potentialWin = currentBet * multiplier;
-            updatePotentialWin();
-        });
-        
-        multiplierBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                multiplierBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                setMultiplier(parseInt(btn.dataset.multiplier));
-            });
-        });
-        
-        // Initialize
-        initGameBoard();
-        updateBalance();
-        updateCurrentBet();
-        updateMultiplier();
-        updatePotentialWin();
-        
-        // Add floating chips in background
-        setInterval(() => {
-            if (document.hidden) return;
-            
-            const chip = document.createElement('div');
-            chip.className = 'chip';
-            chip.style.left = `${Math.random() * 100}vw`;
-            chip.style.top = '-30px';
-            chip.style.animationDuration = `${Math.random() * 3 + 2}s`;
-            document.body.appendChild(chip);
-            
-            setTimeout(() => {
-                chip.remove();
-            }, 5000);
-        }, 1000);
+        initGame();
     </script>
 </body>
 </html>
