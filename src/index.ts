@@ -1,11 +1,13 @@
 export interface Env { AI: any; ASSETS: { fetch: (r: Request) => Promise<Response> }; }
 
-const SYSTEM_PROMPT = `
-You are BlockAI. 
-For Mathematics: Use LaTeX format for all calculations. Wrap display equations in $$...$$ and inline in $...$. Example: $$1 \\over 1 = 1$$.
-For Quizzes: If asked for a quiz, provide multiple choice questions (A, B, C, D) and wait for user answer.
-For Coding: Use markdown code blocks.
-Your UI must be clean and academic. Identify as BlockAI.
+const PROMPT = `
+You are BlockAI.
+Format Rules:
+1. Math: Always use LaTeX. Display math in $$...$$. Inline math in $...$. 
+   Example: To show one over one, use $1 \\over 1$.
+2. Logic: Be very precise with homework help.
+3. Code: Use markdown blocks.
+4. Quizzes: If asked, create interactive multiple-choice quizzes.
 `;
 
 export default {
@@ -13,7 +15,7 @@ export default {
         const url = new URL(request.url);
         if (url.pathname === "/api/chat" && request.method === "POST") {
             const { messages } = await request.json() as any;
-            messages.unshift({ role: "system", content: SYSTEM_PROMPT });
+            messages.unshift({ role: "system", content: PROMPT });
 
             const stream = await env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
                 messages,
