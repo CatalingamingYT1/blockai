@@ -1,76 +1,26 @@
-/**
- * BlockAI - Backend (Cloudflare Worker)
- * Powered by Cloudflare Workers AI
- */
+export interface Env { AI: any; ASSETS: { fetch: (r: Request) => Promise<Response> }; }
 
-export interface Env {
-  // Binding-ul către AI definit în dashboard-ul Cloudflare
-  AI: any;
-  // Binding-ul către resursele statice (HTML, JS, CSS)
-  ASSETS: { fetch: (request: Request) => Promise<Response> };
-}
-
-// Modelul LLM utilizat - Llama 3.1 este rapid și foarte bun la cod și teme
-const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
-
-// Instrucțiunile de sistem care definesc comportamentul BlockAI
 const SYSTEM_PROMPT = `
-You are BlockAI, a premium AI assistant developed by Cătălin. 
-Your goal is to be the best assistant for students and developers.
-- When asked for help with homework: Provide step-by-step explanations and clear answers.
-- When asked for help with code: Use Markdown code blocks (\`\`\`language\\n code \`\`\`), write clean code, and explain how it works.
-- Always identify as BlockAI. 
-- Be professional, helpful, and never make mistakes in calculations or syntax.
-- Language: Respond in the same language the user uses.
+You are BlockAI. 
+For Mathematics: Use LaTeX format for all calculations. Wrap display equations in $$...$$ and inline in $...$. Example: $$1 \\over 1 = 1$$.
+For Quizzes: If asked for a quiz, provide multiple choice questions (A, B, C, D) and wait for user answer.
+For Coding: Use markdown code blocks.
+Your UI must be clean and academic. Identify as BlockAI.
 `;
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
+    async fetch(request: Request, env: Env): Promise<Response> {
+        const url = new URL(request.url);
+        if (url.pathname === "/api/chat" && request.method === "POST") {
+            const { messages } = await request.json() as any;
+            messages.unshift({ role: "system", content: SYSTEM_PROMPT });
 
-    // 1. Ruta pentru API-ul de Chat
-    if (url.pathname === "/api/chat" && request.method === "POST") {
-      try {
-        const body = await request.json() as { messages: any[] };
-        const messages = body.messages || [];
-
-        // Inserăm prompt-ul de sistem la începutul conversației pentru context
-        if (!messages.some((msg: any) => msg.role === "system")) {
-          messages.unshift({
-            role: "system",
-            content: SYSTEM_PROMPT
-          });
+            const stream = await env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
+                messages,
+                stream: true,
+            });
+            return new Response(stream, { headers: { "Content-Type": "text/event-stream" } });
         }
-
-        // Rulăm modelul AI cu opțiunea de streaming activată
-        const stream = await env.AI.run(MODEL_ID, {
-          messages: messages,
-          stream: true,
-        });
-
-        // Returnăm stream-ul direct către frontend cu header-ul corect
-        return new Response(stream, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-          },
-        });
-
-      } catch (error) {
-        console.error("BlockAI Error:", error);
-        return new Response(
-          JSON.stringify({ error: "Internal Server Error", details: error }),
-          { 
-            status: 500, 
-            headers: { "Content-Type": "application/json" } 
-          }
-        );
-      }
+        return env.ASSETS.fetch(request);
     }
-
-    // 2. Ruta pentru fișierele statice (index.html, chat.js)
-    // Dacă URL-ul nu începe cu /api/, Cloudflare va căuta fișierul în folderul public
-    return env.ASSETS.fetch(request);
-  },
-};
+}
