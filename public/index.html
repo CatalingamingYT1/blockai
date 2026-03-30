@@ -1,72 +1,78 @@
 <!doctype html>
-<html lang="en" class="dark"> <head>
+<html lang="en" class="dark">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BlockAI - Premium AI</title>
+    <title>BlockAI - Your Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Saira:wght@500;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --sidebar-bg: #202123;
-            --chat-bg: #343541;
-            --input-bg: #40414f;
-        }
-        .dark body { background-color: #343541; color: white; }
-        .sidebar { width: 260px; background: #202123; transition: transform 0.3s ease; }
-        .message-user { background: #343541; }
-        .message-assistant { background: #444654; }
-        pre { background: #000; padding: 10px; border-radius: 5px; position: relative; overflow-x: auto; }
-        .copy-btn { position: absolute; top: 5px; right: 5px; font-size: 10px; background: #555; padding: 2px 5px; cursor: pointer; }
-        @media (max-width: 768px) {
-            .sidebar { position: absolute; z-index: 50; transform: translateX(-100%); height: 100%; }
-            .sidebar.open { transform: translateX(0); }
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #343541; color: #ececf1; }
+        .sidebar { background-color: #202123; width: 260px; }
+        .chat-input-container { background-image: linear-gradient(180deg,rgba(53,55,64,0),#353740 58.85%); }
+        .message-ai { background-color: #444654; }
+        .message-user { background-color: #343541; }
+        /* Stil pentru fracții și mate */
+        .katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
+        pre { background: #000; padding: 15px; border-radius: 8px; margin: 10px 0; position: relative; }
+        code { font-family: 'Courier New', Courier, monospace; }
+        .ad-slot { border: 1px dashed #565869; background: #2d2d39; color: #8e8ea0; text-align: center; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen">
 
-    <aside id="sidebar" class="sidebar flex-shrink-0 flex flex-col p-2 text-white">
-        <button id="new-chat-btn" class="border border-white/20 p-3 rounded-md hover:bg-white/10 mb-4 text-left">+ New Chat</button>
-        <div id="chat-list" class="flex-1 overflow-y-auto space-y-2">
-            </div>
-        <div class="mt-auto border-t border-white/20 pt-2">
-            <button id="toggle-dark" class="w-full text-left p-2 hover:bg-white/10 rounded">🌓 Toggle Mode</button>
+    <aside class="sidebar hidden md:flex flex-col p-2 h-full">
+        <button id="new-chat" class="flex items-center p-3 border border-white/20 rounded-md hover:bg-gray-500/10 transition mb-4 text-sm">
+            <span class="mr-2">+</span> New Chat
+        </button>
+        <div id="history-list" class="flex-1 overflow-y-auto space-y-2 text-sm"></div>
+        <div class="border-t border-white/20 p-2 text-xs text-gray-400">
+            BlockAI v1.0 | Settings
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative h-full">
-        <div class="md:hidden p-4 border-b border-white/20 flex justify-between items-center">
-            <button id="menu-toggle">☰</button>
-            <h1 class="font-bold">BlockAI</h1>
-            <div></div>
-        </div>
-
-        <div class="hidden md:flex justify-center items-center h-24 bg-gray-900 border-b border-white/10 text-xs text-gray-500">
-            [ PLACE 728x90 ADSTERRA BANNER HERE ]
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        
+        <div class="ad-slot hidden md:block h-20 w-full p-2 text-[10px]">
+            [ ADSTERRA BANNER 728x90 HERE ]
         </div>
 
         <div id="chat-window" class="flex-1 overflow-y-auto">
-            <div id="welcome-screen" class="flex flex-col items-center justify-center h-full p-6 text-center">
-                <h1 class="text-4xl font-bold mb-8 text-blue-500">BlockAI</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                    <button onclick="startSpecific('Help me with homework')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">📚 Help me with homework</button>
-                    <button onclick="startSpecific('Help with my code')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">💻 Help with my code</button>
-                    <button onclick="startSpecific('Write a story')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">📝 Write a story</button>
-                    <button onclick="startSpecific('Explain Quantum Physics')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">💡 Explain complex topics</button>
+            <div id="welcome" class="flex flex-col items-center justify-center min-h-full p-6">
+                <h1 class="text-4xl font-bold mb-10">BlockAI</h1>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl">
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                        <h3 class="font-bold mb-2">📚 Homework</h3>
+                        <button onclick="quickStart('Solve 1/1 + 2/3 and show steps')" class="text-xs text-gray-400 hover:text-white">"Solve math fractions step by step"</button>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                        <h3 class="font-bold mb-2">🧠 Quiz Mode</h3>
+                        <button onclick="quickStart('Create a 5-question quiz about Biology')" class="text-xs text-gray-400 hover:text-white">"Make a quiz for my exam"</button>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                        <h3 class="font-bold mb-2">💻 Code</h3>
+                        <button onclick="quickStart('Write a Python script for a calculator')" class="text-xs text-gray-400 hover:text-white">"Help me fix my code blocks"</button>
+                    </div>
                 </div>
             </div>
-            <div id="messages-container" class="hidden flex flex-col"></div>
+            <div id="messages" class="flex flex-col"></div>
         </div>
 
-        <div class="md:hidden flex justify-center h-12 bg-gray-900 text-[8px] text-gray-600">
-            [ PLACE 320x50 MOBILE AD HERE ]
-        </div>
-
-        <div class="p-4 border-t border-white/10">
-            <div class="max-w-3xl mx-auto relative flex items-center bg-[#40414f] rounded-xl p-2 shadow-xl">
-                <textarea id="user-input" rows="1" class="w-full bg-transparent border-none text-white focus:outline-none p-2 resize-none" placeholder="Message BlockAI..."></textarea>
-                <button id="send-btn" class="p-2 bg-blue-600 rounded-lg hover:bg-blue-700">➜</button>
+        <div class="chat-input-container p-4 pb-8">
+            <div class="max-w-3xl mx-auto relative">
+                <textarea id="user-input" rows="1" class="w-full bg-[#40414f] text-white rounded-xl p-4 pr-12 shadow-2xl focus:outline-none border-none resize-none" placeholder="Send a message..."></textarea>
+                <button id="send-btn" class="absolute right-3 bottom-3 p-1 text-gray-400 hover:text-white">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
             </div>
-            <p class="text-[10px] text-center mt-2 text-gray-400">BlockAI can make mistakes. Verify important info.</p>
+            
+            <div class="ad-slot md:hidden mt-4 h-12 w-full text-[8px]">
+                [ MOBILE AD 320x50 HERE ]
+            </div>
         </div>
     </main>
 
