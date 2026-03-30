@@ -1,104 +1,145 @@
-const chatMessages = document.getElementById("chat-messages");
-const userInput = document.getElementById("user-input");
-const sendButton = document.getElementById("send-button");
-const typingIndicator = document.getElementById("typing-indicator");
+const chatWindow = document.getElementById('chat-window');
+const welcomeScreen = document.getElementById('welcome-screen');
+const msgContainer = document.getElementById('messages-container');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const chatList = document.getElementById('chat-list');
+const sidebar = document.getElementById('sidebar');
 
-let chatHistory = [
-	{ role: "assistant", content: "Hello! I am BlockAI. How can I assist you today?" }
-];
-let isProcessing = false;
+let currentChatId = null;
+let conversations = JSON.parse(localStorage.getItem('blockai_chats')) || {};
 
-// Auto-resize input box
-userInput.addEventListener("input", function () {
-	this.style.height = "auto";
-	this.style.height = this.scrollHeight + "px";
-});
+// Load History in Sidebar
+function updateSidebar() {
+    chatList.innerHTML = '';
+    Object.keys(conversations).sort((a,b) => b - a).forEach(id => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center p-2 hover:bg-white/10 rounded cursor-pointer group";
+        item.innerHTML = `
+            <span class="truncate text-sm" onclick="loadChat('${id}')">💬 ${conversations[id].title}</span>
+            <button onclick="deleteChat('${id}')" class="hidden group-hover:block text-red-500">🗑️</button>
+        `;
+        chatList.appendChild(item);
+    });
+}
 
-// Submit on Enter
-userInput.addEventListener("keydown", (e) => {
-	if (e.key === "Enter" && !e.shiftKey) {
-		e.preventDefault();
-		sendMessage();
-	}
-});
+// Start with a specific prompt (Homework/Code)
+function startSpecific(prompt) {
+    newChat();
+    userInput.value = prompt;
+    sendMessage();
+}
 
-sendButton.addEventListener("click", sendMessage);
+function newChat() {
+    currentChatId = Date.now().toString();
+    welcomeScreen.classList.add('hidden');
+    msgContainer.classList.remove('hidden');
+    msgContainer.innerHTML = '';
+    userInput.focus();
+}
 
 async function sendMessage() {
-	const text = userInput.value.trim();
-	if (text === "" || isProcessing) return;
+    const text = userInput.value.trim();
+    if (!text) return;
+    if (!currentChatId) newChat();
 
-	isProcessing = true;
-	userInput.disabled = true;
-	sendButton.disabled = true;
+    addMessage('user', text);
+    userInput.value = '';
 
-	// Update UI
-	addMessageToChat("user", text);
-	userInput.value = "";
-	userInput.style.height = "auto";
-	typingIndicator.classList.add("visible");
-	chatHistory.push({ role: "user", content: text });
+    // Create entry in memory if new
+    if (!conversations[currentChatId]) {
+        conversations[currentChatId] = { title: text.substring(0, 20), messages: [] };
+    }
+    conversations[currentChatId].messages.push({ role: 'user', content: text });
 
-	try {
-		const assistantMsgDiv = document.createElement("div");
-		assistantMsgDiv.className = "message assistant-message";
-		assistantMsgDiv.innerHTML = "<p></p>";
-		chatMessages.appendChild(assistantMsgDiv);
-		const assistantText = assistantMsgDiv.querySelector("p");
+    const assistantDiv = addMessage('assistant', '...');
+    const assistantP = assistantDiv.querySelector('p');
 
-		const response = await fetch("/api/chat", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ messages: chatHistory }),
-		});
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            body: JSON.stringify({ messages: conversations[currentChatId].messages })
+        });
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullRes = "";
 
-		if (!response.ok) throw new Error("API Error");
-
-		const reader = response.body.getReader();
-		const decoder = new TextDecoder();
-		let fullResponse = "";
-		let buffer = "";
-
-		while (true) {
-			const { done, value } = await reader.read();
-			if (done) break;
-
-			buffer += decoder.decode(value, { stream: true });
-			const lines = buffer.split("\n");
-			buffer = lines.pop();
-
-			for (const line of lines) {
-				if (line.startsWith("data:")) {
-					const dataStr = line.slice(5).trim();
-					if (dataStr === "[DONE]") break;
-					try {
-						const json = JSON.parse(dataStr);
-						const content = json.response || json.choices?.[0]?.delta?.content || "";
-						if (content) {
-							fullResponse += content;
-							assistantText.textContent = fullResponse;
-							chatMessages.scrollTop = chatMessages.scrollHeight;
-						}
-					} catch (e) {}
-				}
-			}
-		}
-		chatHistory.push({ role: "assistant", content: fullResponse });
-	} catch (err) {
-		addMessageToChat("assistant", "Sorry, BlockAI encountered an error. Please try again.");
-	} finally {
-		typingIndicator.classList.remove("visible");
-		isProcessing = false;
-		userInput.disabled = false;
-		sendButton.disabled = false;
-		userInput.focus();
-	}
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data:')) {
+                    const data = line.slice(5).trim();
+                    if (data === "[DONE]") break;
+                    try {
+                        const json = JSON.parse(data);
+                        const content = json.response || json.choices?.[0]?.delta?.content || "";
+                        fullRes += content;
+                        // Format code blocks
+                        assistantP.innerHTML = formatAIResponse(fullRes);
+                    } catch(e){}
+                }
+            }
+        }
+        conversations[currentChatId].messages.push({ role: 'assistant', content: fullRes });
+        saveData();
+    } catch (e) {
+        assistantP.innerText = "Error connecting to BlockAI.";
+    }
 }
 
-function addMessageToChat(role, content) {
-	const div = document.createElement("div");
-	div.className = `message ${role}-message`;
-	div.innerHTML = `<p>${content}</p>`;
-	chatMessages.appendChild(div);
-	chatMessages.scrollTop = chatMessages.scrollHeight;
+function addMessage(role, content) {
+    const div = document.createElement('div');
+    div.className = `p-6 flex ${role === 'user' ? 'message-user' : 'message-assistant'}`;
+    div.innerHTML = `
+        <div class="max-w-3xl mx-auto flex w-full">
+            <span class="mr-4 font-bold text-blue-400">${role === 'user' ? 'You' : 'BlockAI'}</span>
+            <p class="flex-1 whitespace-pre-wrap">${content}</p>
+        </div>
+    `;
+    msgContainer.appendChild(div);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return div;
 }
+
+function formatAIResponse(text) {
+    // Basic code block formatting
+    return text.replace(/```(\w+)?\n([\s\S]+?)```/g, (m, lang, code) => {
+        return `<pre><code>${code.trim()}</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>`;
+    });
+}
+
+function copyCode(btn) {
+    const code = btn.previousElementSibling.innerText;
+    navigator.clipboard.writeText(code);
+    btn.innerText = "Copied!";
+    setTimeout(() => btn.innerText = "Copy", 2000);
+}
+
+function loadChat(id) {
+    currentChatId = id;
+    welcomeScreen.classList.add('hidden');
+    msgContainer.classList.remove('hidden');
+    msgContainer.innerHTML = '';
+    conversations[id].messages.forEach(m => addMessage(m.role, m.content));
+}
+
+function deleteChat(id) {
+    delete conversations[id];
+    saveData();
+    location.reload();
+}
+
+function saveData() {
+    localStorage.setItem('blockai_chats', JSON.stringify(conversations));
+    updateSidebar();
+}
+
+document.getElementById('new-chat-btn').onclick = newChat;
+document.getElementById('menu-toggle').onclick = () => sidebar.classList.toggle('open');
+document.getElementById('toggle-dark').onclick = () => document.documentElement.classList.toggle('dark');
+sendBtn.onclick = sendMessage;
+updateSidebar();
