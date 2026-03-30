@@ -1,131 +1,75 @@
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>BlockAI - Free Next-Gen Artificial Intelligence</title>
-		<style>
-			:root {
-				--primary-color: #2563eb; /* Modern Blue */
-				--primary-hover: #1d4ed8;
-				--light-bg: #f3f4f6;
-				--border-color: #d1d5db;
-				--text-color: #111827;
-				--text-light: #6b7280;
-				--user-msg-bg: #dbeafe;
-				--assistant-msg-bg: #ffffff;
-			}
+<html lang="en" class="dark"> <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlockAI - Premium AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --sidebar-bg: #202123;
+            --chat-bg: #343541;
+            --input-bg: #40414f;
+        }
+        .dark body { background-color: #343541; color: white; }
+        .sidebar { width: 260px; background: #202123; transition: transform 0.3s ease; }
+        .message-user { background: #343541; }
+        .message-assistant { background: #444654; }
+        pre { background: #000; padding: 10px; border-radius: 5px; position: relative; overflow-x: auto; }
+        .copy-btn { position: absolute; top: 5px; right: 5px; font-size: 10px; background: #555; padding: 2px 5px; cursor: pointer; }
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; z-index: 50; transform: translateX(-100%); height: 100%; }
+            .sidebar.open { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
 
-			* { box-sizing: border-box; margin: 0; padding: 0; }
+    <aside id="sidebar" class="sidebar flex-shrink-0 flex flex-col p-2 text-white">
+        <button id="new-chat-btn" class="border border-white/20 p-3 rounded-md hover:bg-white/10 mb-4 text-left">+ New Chat</button>
+        <div id="chat-list" class="flex-1 overflow-y-auto space-y-2">
+            </div>
+        <div class="mt-auto border-t border-white/20 pt-2">
+            <button id="toggle-dark" class="w-full text-left p-2 hover:bg-white/10 rounded">🌓 Toggle Mode</button>
+        </div>
+    </aside>
 
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-				line-height: 1.6;
-				color: var(--text-color);
-				background-color: #f9fafb;
-				max-width: 900px;
-				margin: 0 auto;
-				padding: 1rem;
-			}
+    <main class="flex-1 flex flex-col relative h-full">
+        <div class="md:hidden p-4 border-b border-white/20 flex justify-between items-center">
+            <button id="menu-toggle">☰</button>
+            <h1 class="font-bold">BlockAI</h1>
+            <div></div>
+        </div>
 
-			header {
-				text-align: center;
-				margin-bottom: 1.5rem;
-				padding: 1rem 0;
-				border-bottom: 3px solid var(--primary-color);
-			}
+        <div class="hidden md:flex justify-center items-center h-24 bg-gray-900 border-b border-white/10 text-xs text-gray-500">
+            [ PLACE 728x90 ADSTERRA BANNER HERE ]
+        </div>
 
-			h1 { font-size: 2.2rem; color: var(--primary-color); letter-spacing: -1px; }
+        <div id="chat-window" class="flex-1 overflow-y-auto">
+            <div id="welcome-screen" class="flex flex-col items-center justify-center h-full p-6 text-center">
+                <h1 class="text-4xl font-bold mb-8 text-blue-500">BlockAI</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                    <button onclick="startSpecific('Help me with homework')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">📚 Help me with homework</button>
+                    <button onclick="startSpecific('Help with my code')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">💻 Help with my code</button>
+                    <button onclick="startSpecific('Write a story')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">📝 Write a story</button>
+                    <button onclick="startSpecific('Explain Quantum Physics')" class="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10">💡 Explain complex topics</button>
+                </div>
+            </div>
+            <div id="messages-container" class="hidden flex flex-col"></div>
+        </div>
 
-			.ad-container {
-				background: #ebebeb;
-				margin: 15px 0;
-				min-height: 90px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border-radius: 8px;
-				border: 1px dashed #bbb;
-				font-size: 11px;
-				color: #777;
-				text-transform: uppercase;
-			}
+        <div class="md:hidden flex justify-center h-12 bg-gray-900 text-[8px] text-gray-600">
+            [ PLACE 320x50 MOBILE AD HERE ]
+        </div>
 
-			.chat-container {
-				display: flex;
-				flex-direction: column;
-				height: calc(100vh - 380px);
-				min-height: 450px;
-				border: 1px solid var(--border-color);
-				border-radius: 12px;
-				overflow: hidden;
-				background: white;
-				box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-			}
+        <div class="p-4 border-t border-white/10">
+            <div class="max-w-3xl mx-auto relative flex items-center bg-[#40414f] rounded-xl p-2 shadow-xl">
+                <textarea id="user-input" rows="1" class="w-full bg-transparent border-none text-white focus:outline-none p-2 resize-none" placeholder="Message BlockAI..."></textarea>
+                <button id="send-btn" class="p-2 bg-blue-600 rounded-lg hover:bg-blue-700">➜</button>
+            </div>
+            <p class="text-[10px] text-center mt-2 text-gray-400">BlockAI can make mistakes. Verify important info.</p>
+        </div>
+    </main>
 
-			.chat-messages {
-				flex: 1;
-				overflow-y: auto;
-				padding: 1.5rem;
-				background-color: var(--light-bg);
-			}
-
-			.message {
-				margin-bottom: 1.2rem;
-				padding: 1rem;
-				border-radius: 12px;
-				max-width: 85%;
-				position: relative;
-			}
-
-			.user-message { background-color: var(--user-msg-bg); align-self: flex-end; margin-left: auto; border-bottom-right-radius: 2px; }
-			.assistant-message { background-color: var(--assistant-msg-bg); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #e5e7eb; }
-
-			.message-input { display: flex; padding: 1.2rem; background: white; border-top: 1px solid var(--border-color); }
-			#user-input { flex: 1; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px; resize: none; font-size: 1rem; outline: none; }
-			#user-input:focus { border-color: var(--primary-color); }
-
-			#send-button { margin-left: 0.8rem; padding: 0 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-			#send-button:hover { background: var(--primary-hover); }
-			#send-button:disabled { background: #9ca3af; cursor: not-allowed; }
-
-			.typing-indicator { display: none; font-style: italic; color: var(--text-light); padding: 0.5rem 1.5rem; font-size: 0.9rem; }
-			.typing-indicator.visible { display: block; }
-
-			footer { margin-top: 2rem; text-align: center; color: var(--text-light); font-size: 0.85rem; }
-		</style>
-	</head>
-	<body>
-		<header>
-			<h1>BlockAI</h1>
-			<p>Next-Generation Artificial Intelligence</p>
-		</header>
-
-		<div class="ad-container" id="ad-top">
-			ADVERTISING SPACE (728x90)
-		</div>
-
-		<div class="chat-container">
-			<div id="chat-messages" class="chat-messages">
-				<div class="message assistant-message">
-					<p>Hello! I am BlockAI. How can I assist you today?</p>
-				</div>
-			</div>
-			<div class="typing-indicator" id="typing-indicator">BlockAI is typing...</div>
-			<div class="message-input">
-				<textarea id="user-input" placeholder="Ask BlockAI anything..." rows="1"></textarea>
-				<button id="send-button">Send</button>
-			</div>
-		</div>
-
-		<div class="ad-container" id="ad-bottom">
-			PROMOTED CONTENT
-		</div>
-
-		<footer>
-			<p>&copy; 2026 BlockAI Project. Developed by Cătălin. All rights reserved.</p>
-		</footer>
-
-		<script src="chat.js"></script>
-	</body>
+    <script src="chat.js"></script>
+</body>
 </html>
