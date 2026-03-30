@@ -3,75 +3,86 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BlockAI - Your Assistant</title>
+    <title>BlockAI | Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Saira:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #343541; color: #ececf1; }
-        .sidebar { background-color: #202123; width: 260px; }
-        .chat-input-container { background-image: linear-gradient(180deg,rgba(53,55,64,0),#353740 58.85%); }
-        .message-ai { background-color: #444654; }
-        .message-user { background-color: #343541; }
-        /* Stil pentru fracții și mate */
-        .katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
-        pre { background: #000; padding: 15px; border-radius: 8px; margin: 10px 0; position: relative; }
-        code { font-family: 'Courier New', Courier, monospace; }
-        .ad-slot { border: 1px dashed #565869; background: #2d2d39; color: #8e8ea0; text-align: center; }
+        body { font-family: 'Inter', sans-serif; background-color: #212121; color: #e3e3e3; }
+        .sidebar { background-color: #171717; width: 260px; transition: all 0.3s ease; }
+        .chat-bubble-ai { background-color: transparent; border: 1px solid #333; border-radius: 15px; }
+        .chat-bubble-user { background-color: #2f2f2f; border-radius: 15px; }
+        .katex-display { margin: 1em 0; padding: 10px; background: #2a2a2a; border-radius: 8px; overflow-x: auto; }
+        pre { background: #0d0d0d !important; padding: 16px; border-radius: 10px; margin: 10px 0; position: relative; border: 1px solid #333; }
+        code { color: #569cd6; font-family: 'Consolas', monospace; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: #333; color: #fff; font-size: 10px; padding: 4px 8px; border-radius: 5px; opacity: 0; transition: 0.2s; }
+        pre:hover .copy-btn { opacity: 1; }
+        /* Scrollbar subtil */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .input-area { background: #2f2f2f; border: 1px solid #444; border-radius: 20px; transition: border 0.2s; }
+        .input-area:focus-within { border-color: #666; }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex h-screen overflow-hidden">
 
-    <aside class="sidebar hidden md:flex flex-col p-2 h-full">
-        <button id="new-chat" class="flex items-center p-3 border border-white/20 rounded-md hover:bg-gray-500/10 transition mb-4 text-sm">
-            <span class="mr-2">+</span> New Chat
+    <aside class="sidebar hidden md:flex flex-col p-4">
+        <button id="new-chat-btn" class="flex items-center justify-center gap-2 p-3 bg-[#2f2f2f] rounded-lg hover:bg-[#3f3f3f] transition font-semibold text-sm">
+            <span class="text-xl">+</span> New Chat
         </button>
-        <div id="history-list" class="flex-1 overflow-y-auto space-y-2 text-sm"></div>
-        <div class="border-t border-white/20 p-2 text-xs text-gray-400">
-            BlockAI v1.0 | Settings
+        <div id="history" class="mt-6 flex-1 overflow-y-auto space-y-2">
+            </div>
+        <div class="p-4 border-t border-gray-800 text-[10px] text-gray-500 uppercase tracking-widest text-center">
+            BlockAI Premium
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative overflow-hidden">
+    <main class="flex-1 flex flex-col relative h-full">
         
-        <div class="ad-slot hidden md:block h-20 w-full p-2 text-[10px]">
-            [ ADSTERRA BANNER 728x90 HERE ]
+        <div class="hidden md:flex justify-center p-2 bg-[#171717] border-b border-[#333]">
+            <div class="w-[728px] h-[90px] bg-[#222] border border-dashed border-[#444] flex items-center justify-center text-[10px] text-gray-600">
+                [ PASTE ADSTERRA BANNER HERE ]
+            </div>
         </div>
 
-        <div id="chat-window" class="flex-1 overflow-y-auto">
-            <div id="welcome" class="flex flex-col items-center justify-center min-h-full p-6">
-                <h1 class="text-4xl font-bold mb-10">BlockAI</h1>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl">
-                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
-                        <h3 class="font-bold mb-2">📚 Homework</h3>
-                        <button onclick="quickStart('Solve 1/1 + 2/3 and show steps')" class="text-xs text-gray-400 hover:text-white">"Solve math fractions step by step"</button>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
-                        <h3 class="font-bold mb-2">🧠 Quiz Mode</h3>
-                        <button onclick="quickStart('Create a 5-question quiz about Biology')" class="text-xs text-gray-400 hover:text-white">"Make a quiz for my exam"</button>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">
-                        <h3 class="font-bold mb-2">💻 Code</h3>
-                        <button onclick="quickStart('Write a Python script for a calculator')" class="text-xs text-gray-400 hover:text-white">"Help me fix my code blocks"</button>
-                    </div>
+        <div id="chat-window" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+            <div id="welcome" class="flex flex-col items-center justify-center h-full text-center">
+                <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">BlockAI</h1>
+                <p class="text-gray-400 mb-12">How can I help your studies today?</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+                    <button onclick="fastStart('Help me with math: calculate (1/2) + (3/4)')" class="p-4 bg-[#2f2f2f] rounded-2xl border border-[#444] hover:border-blue-500 transition text-left text-sm">
+                        <span class="block font-bold mb-1">📚 Math Homework</span>
+                        "Explain fractions like 1/1 step by step"
+                    </button>
+                    <button onclick="fastStart('Create a 5-question Quiz about Science')" class="p-4 bg-[#2f2f2f] rounded-2xl border border-[#444] hover:border-purple-500 transition text-left text-sm">
+                        <span class="block font-bold mb-1">🧠 Practice Quiz</span>
+                        "Test my knowledge for the exam"
+                    </button>
                 </div>
             </div>
-            <div id="messages" class="flex flex-col"></div>
+            <div id="msg-render" class="max-w-3xl mx-auto space-y-6"></div>
         </div>
 
-        <div class="chat-input-container p-4 pb-8">
-            <div class="max-w-3xl mx-auto relative">
-                <textarea id="user-input" rows="1" class="w-full bg-[#40414f] text-white rounded-xl p-4 pr-12 shadow-2xl focus:outline-none border-none resize-none" placeholder="Send a message..."></textarea>
-                <button id="send-btn" class="absolute right-3 bottom-3 p-1 text-gray-400 hover:text-white">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-                </button>
-            </div>
-            
-            <div class="ad-slot md:hidden mt-4 h-12 w-full text-[8px]">
-                [ MOBILE AD 320x50 HERE ]
+        <div class="p-4 bg-transparent">
+            <div class="max-w-3xl mx-auto">
+                <div class="input-area p-2 flex items-end gap-2 shadow-2xl">
+                    <textarea id="user-input" rows="1" class="flex-1 bg-transparent border-none text-white p-2 focus:outline-none resize-none max-h-48" placeholder="Ask BlockAI..."></textarea>
+                    <button id="send-btn" class="p-2 bg-white text-black rounded-full hover:bg-gray-200 transition">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="md:hidden mt-4 flex justify-center">
+                    <div class="w-[320px] h-[50px] bg-[#222] border border-dashed border-[#444] flex items-center justify-center text-[8px] text-gray-600">
+                        [ MOBILE AD HERE ]
+                    </div>
+                </div>
+
+                <p class="text-center text-[10px] text-gray-500 mt-3">BlockAI V1.2. Designed for students.</p>
             </div>
         </div>
     </main>
